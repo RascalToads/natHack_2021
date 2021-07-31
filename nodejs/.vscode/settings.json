@@ -1,0 +1,28 @@
+{
+  "editor.codeActionsOnSave": {
+    // For ESLint
+    "source.fixAll.eslint": true,
+    // For TSLint
+    "source.fixAll.tslint": true,
+    // For Stylelint
+    "source.fixAll.stylelint": true
+  },
+  "editor.rulers": [
+    73,
+    100
+  ],
+  "editor.renderWhitespace": "all",
+  "editor.tabSize": 2,
+  "eslint.alwaysShowStatus": true,
+  "eslint.lintTask.enable": true,
+  "eslint.lintTask.options": "-c .eslintrc.yml",
+  "eslint.options": {
+    "configFile": ".eslintrc.yml"
+  },
+  "eslint.runtime": "node",
+  "eslint.workingDirectories": [
+    "./",
+  ], 
+  "javascript.suggest.completeFunctionCalls": true,
+  "javascript.referencesCodeLens.enabled": true,
+}

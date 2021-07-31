@@ -1,13 +1,18 @@
 extends:
   - airbnb-base
   - prettier
+  - prettier/react
 
 plugins:
   - import
   - jest
   - prettier
+  - react
 
-parser: babel-eslint
+parserOptions: 
+  babelOptions: 
+    presets: 
+      - "@babel/eslint-parser"
 
 env:
   browser: true

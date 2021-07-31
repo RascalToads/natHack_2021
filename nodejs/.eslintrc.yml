@@ -1,0 +1,36 @@
+extends:
+  - airbnb-base
+  - prettier
+
+plugins:
+  - import
+  - jest
+  - prettier
+
+parser: babel-eslint
+
+env:
+  browser: true
+  node: true
+  jest: true
+
+settings:
+  import/resolver: 
+    node:
+      extensions: [ .js, .ts ]
+
+rules:
+  camelcase: 0
+  global-require: 0
+  import/no-extraneous-dependencies: 0
+  import/no-named-as-default-member: 0
+  import/no-named-as-default: 0
+  jsx-a11y/label-has-for: 0
+  no-console: 0
+  no-extra-boolean-cast: 0
+  no-plusplus: 0
+  no-return-assign: 0
+  no-use-before-define: 0
+  prettier/prettier:
+    - error
+  import/extensions: 0

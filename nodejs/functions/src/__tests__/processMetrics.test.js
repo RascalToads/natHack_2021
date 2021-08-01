@@ -8,7 +8,7 @@ const {
   didWink,
   didMoveEye,
   processMetricsData,
-} = require('../processMetrics.js');
+} = require('../processMetrics');
 
 const TEST_DATA = {
   action: {

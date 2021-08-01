@@ -12,6 +12,5 @@ export const db = firebase.firestore();
 console.log(process.env, process.env.USE_EMULATOR);
 
 if (process.env.REACT_APP_USE_EMULATOR) {
-  debugger;
   db.useEmulator('localhost', 8080);
 }

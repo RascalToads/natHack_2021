@@ -1,12 +1,11 @@
+import { useEffect } from 'react';
 import { useForm } from 'react-hook-form';
-import AddIcon from '@material-ui/icons/Add';
-import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAppContext } from '../contexts/AppContext';
-import ControlledSelection from './ControlledSelection';
-import ControlledTextField from './ControlledTextField';
+import { db } from '../firebase';
+import ActionRows from './ActionRows';
 import Selection from './Selection';
 
 const useStyles = makeStyles((theme) => ({
@@ -17,14 +16,21 @@ const availableContext = [
   {
     id: 0,
     name: 'zero',
+    // data: contextData actually goes here
   },
 ];
 
 const WebhookConfigurator = (props) => {
   const [context, setContext] = useAppContext();
+  useEffect(() => {
+    //TODO: load context here wait on schema.data
+  }, [context]);
 
   const onChange = (event) => {
     console.log('CHANGING CONTEXT');
+    // TODO: just set context id and name, let the effect load the data
+    // const doc = db.doc('contexts/f');
+    // doc.set({ testing: 'okay' });
     setContext(availableContext.find((t) => t.id === event.target.value));
   };
 
@@ -46,76 +52,29 @@ const WebhookConfigurator = (props) => {
 
 const ConfigurationForm = (props) => {
   const { context, setContext } = props;
-  const { control, handleSubmit } = useForm();
+  const { control, handleSubmit, watch } = useForm({
+    defaultValues: { ...context, data: context?.data ?? [{ endpoints: [{}] }] },
+  });
   const onSubmit = ({ context: nextContextId, ...data }) => {
-    //TODO: UPDATE FOR ACTIONS
+    //TODO: UPDATE to parse  ACTIONS
     // TODO: SAVE TO FIRESTORE
+    // TODO: just set context value and id, let top useeffect load the data
     const nextContext = availableContext.find((t) => t.id === nextContextId);
     setContext({ ...data, ...nextContext });
   };
 
   console.log('in form context is', context);
+  const actions = Object.values(context?.data ?? {});
+
   // TODO: HANDLE ERRORS
   // TODO: SUBMIT TO FIRESTORE
-  const data = {};
-  const i = 0;
-  const addEndpoint = addEndpointThunk(props);
-  const addAction = addActionThunk(props);
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
-      {/* TODO: add array here */}
-      <ControlledSelection
-        control={control}
-        rules={{ required: true }}
-        helperText="Select an Action"
-        options={availableContext}
-        title={`Action ${i + 1}`}
-        tag="action"
-        value={data.action ?? ''}
-      />
-      <ControlledSelection
-        control={control}
-        rules={{ required: true }}
-        helperText="Select an Action"
-        options={availableContext}
-        title="Value Type"
-        tag="valueType"
-        value={data.action ?? ''}
-      />
-      {/* TODO: add array here */}
-      <ControlledTextField
-        control={control}
-        rules={{ required: true }} // TODO: format!
-        helperText="Select a Context"
-        options={availableContext}
-        title={`Endpoint ${i + 1}`}
-      />
-      <Button
-        aria-label="add"
-        color="primary"
-        startIcon={<AddIcon />}
-        variant="contained"
-        onClick={addEndpoint(i)}
-      >
-        Add
-      </Button>
-      {/* TODO: close rows and make last row add button */}
-      <Button
-        aria-label="add"
-        color="primary"
-        startIcon={<AddIcon />}
-        variant="contained"
-        onClick={addAction()}
-      >
-        Add
-      </Button>
+      <ActionRows actions={actions} control={control} watch={watch} />
 
       <input type="submit" />
     </form>
   );
 };
-
-const addEndpointThunk = (details) => (index) => {}; //TODO:
-const addActionThunk = (details) => (index) => {}; //TODO:
 
 export default WebhookConfigurator;

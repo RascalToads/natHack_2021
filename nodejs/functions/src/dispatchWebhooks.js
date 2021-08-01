@@ -1,3 +1,4 @@
+const isString = require('lodash.isstring');
 const { curly } = require('node-libcurl');
 const path = require('path');
 const { actionValue } = require('./processMetrics');
@@ -25,7 +26,8 @@ const dispatchWebhooks = async (req, res) => {
     const dispatches = Object.values(context?.data ?? {});
     const dispatchWebhook = dispatchWebhookThunk(json);
     // TODO: log errors
-    Promise.allSettled(dispatches.map(dispatchWebhook));
+    const results = await Promise.allSettled(dispatches.map(dispatchWebhook));
+    console.log(results);
   } catch (error) {
     console.error(error);
   }
@@ -37,39 +39,50 @@ const dispatchWebhookThunk = (json) => async (dispatch) => {
   if (!endpoints?.length) return 'OK';
   const expectedValue = normalizeValue(value, valueType);
   const results = await Promise.allSettled(
-    endpoints.map(({ url, mode }) => {
+    endpoints.map(async ({ url, mode }) => {
       let endpoint = url;
       if (mode === 'GET') {
         endpoint = path.join(endpoint, action);
         if (valueType === 'value') endpoint = path.join(endpoint, value);
         else if (shouldAbortGet({ action, json, expectedValue })) return 'OK';
-        console.log('calling', endpoint);
-        return curly.get(endpoint);
+        console.log('get calling', endpoint);
+        const { statusCode, data } = await curly.get(endpoint);
+        console.log(statusCode, data);
+        return statusCode;
       }
-      console.log('calling', endpoint);
       if (shouldAbortPost({ action, json, expectedValue, valueType }))
         return 'OK';
+      console.log('post calling', endpoint);
       const options = {
-        method: mode,
+        httpHeader: [
+          'Content-Type: application/json',
+          'Accept: application/json',
+        ],
         postFields: formatPostFields({ action, json, valueType }),
       };
-      return curly.post(endpoint, options);
-      // const { statusCode, data } = await curly.post(
+      const { statusCode, data } = await curly.post(endpoint, options);
+      console.log(statusCode, data);
+      return statusCode;
     })
+  );
+  console.log(
+    'dispatches',
+    results.filter((r) => r.reason)
   );
   // TODO: log errors
   return results;
 };
 
 const normalizeValue = (value, valueType) => {
-  if (valueType === 'boolean') return value?.toLowerCase() === 'true';
+  if (valueType === 'boolean')
+    return isString(value) ? value === 'true' : Boolean(value);
   return value;
 };
 
 const shouldAbortGet = ({ action, json, expectedValue, valueType }) => {
   let aborts = true;
   try {
-    const result = normalizeValue(actionValue(json, action), valueType);
+    const result = normalizeValue(actionValue(action, json), valueType);
     aborts = result !== expectedValue;
   } catch (error) {
     console.error(error);
@@ -88,7 +101,9 @@ const formatPostFields = ({ action, json, valueType }) => {
   switch (valueType) {
     case 'boolean':
     case 'value':
-      return normalizeValue(actionValue(json, action), valueType);
+      return JSON.stringify({
+        data: { value: normalizeValue(actionValue(action, json), valueType) },
+      });
     case 'json':
       return JSON.stringify(json);
     default:

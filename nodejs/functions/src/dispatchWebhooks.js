@@ -3,22 +3,26 @@ const path = require('path');
 const { processMetricsData } = require('./processMetrics');
 
 /*
-'blink': {
-  action: 'blink, eye-movement, brow-up, brow-down, 
-  outputs: [
-    {
-      mode: "GET | POST", 
-      endpoint: "localhost:3000", 
-    },
-  ], 
-  valueType: 'Boolean, Number, Raw',
-  value: true, false, null
+id: 0, 
+name: "something",
+data: {
+  'blink': {
+    action: 'blink, eye-movement, brow-up, brow-down, 
+    outputs: [
+      {
+        mode: "GET | POST", 
+        endpoint: "localhost:3000", 
+      },
+    ], 
+    valueType: 'Boolean, Number, Raw',
+    value: true, false, null
+  }, 
 }
 */
 const dispatchWebhooks = async (req, res) => {
   const { context, body: json } = req;
   try {
-    const dispatches = Object.values(context);
+    const dispatches = Object.values(context?.data);
     const dispatchWebhook = dispatchWebhookThunk(json);
     Promise.allSettled(dispatches.map(dispatchWebhook));
   } catch (error) {

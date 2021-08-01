@@ -3,12 +3,7 @@
  */
 
 const { expect } = require('@jest/globals');
-const {
-  didBlink,
-  didWink,
-  didMoveEye,
-  processMetricsData,
-} = require('../processMetrics');
+const { actionValue, didAction } = require('../processMetrics');
 
 const TEST_DATA = {
   action: {
@@ -62,33 +57,21 @@ const TEST_DATA = {
   type: 'metricsJson',
 };
 
-test('didBlink', () => {
-  const data = JSON.parse(JSON.stringify(TEST_DATA));
-  data.action.value.blink.blink = 0;
-  expect(didBlink(data)).toBeFalsy();
-  expect(processMetricsData(data, 'blink')).toBeFalsy();
-  data.action.value.blink.blink = 1;
-  expect(didBlink(data)).toBeTruthy();
-  expect(processMetricsData(data, 'blink')).toBeTruthy();
-});
-
-test('didWink', () => {
-  const data = JSON.parse(JSON.stringify(TEST_DATA));
-  data.action.value.wink = { wink: 0 };
-  data.action.value.wink.wink = 0;
-  expect(didWink(data)).toBeFalsy();
-  expect(processMetricsData(data, 'wink')).toBeFalsy();
-  data.action.value.wink.wink = 1;
-  expect(didWink(data)).toBeTruthy();
-  expect(processMetricsData(data, 'wink')).toBeTruthy();
-});
-
-test('didMoveEye', () => {
-  const data = JSON.parse(JSON.stringify(TEST_DATA));
-  data.action.value.eye.eye = 0;
-  expect(didMoveEye(data)).toBeFalsy();
-  expect(processMetricsData(data, 'eye')).toBeFalsy();
-  data.action.value.eye.eye = 1;
-  expect(didMoveEye(data)).toBeTruthy();
-  expect(processMetricsData(data, 'eye')).toBeTruthy();
+describe('processMetricsData', () => {
+  let data;
+  beforeEach(() => {
+    data = JSON.parse(JSON.stringify(TEST_DATA));
+  });
+  it('should handle action', () => {
+    expect(didAction('blink', data)).toBeTruthy();
+    data.action.value.blink.blink = 0;
+    expect(actionValue('blink', data)).toEqual(0);
+    data.action.value.blink.blink = 1;
+    expect(actionValue('blink', data)).toEqual(1);
+    expect(didAction('blink', data)).toBeTruthy();
+  });
+  it('should handle invalid data', () => {
+    expect(didAction('FAKE', data)).toBeFalsy();
+    expect(actionValue('FAKE', data)).toBeUndefined();
+  });
 });

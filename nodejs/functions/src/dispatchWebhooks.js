@@ -1,6 +1,6 @@
 const { curly } = require('node-libcurl');
 const path = require('path');
-const { getValue, processMetricsData } = require('./processMetrics');
+const { actionValue } = require('./processMetrics');
 
 /*
 id: 0, 
@@ -41,7 +41,7 @@ const dispatchWebhookThunk = (json) => async (dispatch) => {
       let endpoint = url;
       if (mode === 'GET') {
         endpoint = path.join(endpoint, action);
-        if (valueType === 'number') endpoint = path.join(endpoint, value);
+        if (valueType === 'value') endpoint = path.join(endpoint, value);
         else if (shouldAbortGet({ action, json, expectedValue })) return 'OK';
         console.log('calling', endpoint);
         return curly.get(endpoint);
@@ -66,11 +66,11 @@ const normalizeValue = (value, valueType) => {
   return value;
 };
 
-const shouldAbortGet = ({ action, json, expectedValue }) => {
+const shouldAbortGet = ({ action, json, expectedValue, valueType }) => {
   let aborts = true;
   try {
-    const actionState = processMetricsData(json, action);
-    aborts = actionState !== expectedValue;
+    const result = normalizeValue(actionValue(json, action), valueType);
+    aborts = result !== expectedValue;
   } catch (error) {
     console.error(error);
   }
@@ -87,9 +87,8 @@ const shouldAbortPost = ({ action, json, expectedValue, valueType }) => {
 const formatPostFields = ({ action, json, valueType }) => {
   switch (valueType) {
     case 'boolean':
-      return Boolean(getValue(json, action));
     case 'value':
-      return getValue(json);
+      return normalizeValue(actionValue(json, action), valueType);
     case 'json':
       return JSON.stringify(json);
     default:

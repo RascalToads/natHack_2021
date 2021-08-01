@@ -1,13 +1,9 @@
 extends:
-  - airbnb-base
   - prettier
   - prettier/react
 
 plugins:
-  - import
-  - jest
   - prettier
-  - react
 
 parserOptions: 
   ecmaVersion: 2020

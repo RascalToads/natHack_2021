@@ -1,15 +1,13 @@
-import { Controller, useForm } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
+import AddIcon from '@material-ui/icons/Add';
+import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import FormHelperText from '@material-ui/core/FormHelperText';
-import FormControl from '@material-ui/core/FormControl';
-import Select from '@material-ui/core/Select';
 import { useAppContext } from '../contexts/AppContext';
-import { Button, TextField } from '@material-ui/core';
-import AddIcon from '@material-ui/icons/Add';
+import ControlledSelection from './ControlledSelection';
+import ControlledTextField from './ControlledTextField';
+import Selection from './Selection';
 
 const useStyles = makeStyles((theme) => ({
   formControl: {},
@@ -40,47 +38,9 @@ const WebhookConfigurator = (props) => {
         title="Context"
         value={context?.id ?? ''}
       />
+      {/* TODO: add loading when context changes and there is no data fetched */}
       <ConfigurationForm context={context} setContext={setContext} />
     </Container>
-  );
-};
-
-const Selection = (props) => {
-  const {
-    onChange,
-    helperText,
-    options,
-    register,
-    control,
-    placeholder,
-    title,
-    tag = title?.toLowerCase(),
-    value = '',
-  } = props;
-  const classes = useStyles();
-  return (
-    <FormControl variant="filled" className={classes.formControl}>
-      <InputLabel id={`select-${tag}-label`}>{title}</InputLabel>
-      <Select
-        id={`select-${tag}`}
-        labelId={`select-${tag}-label`}
-        onChange={onChange}
-        placeholder={placeholder}
-        value={value}
-        {...(register ? register(tag) : {})}
-        control={control}
-      >
-        <MenuItem value="">
-          <em>None</em>
-        </MenuItem>
-        {options.map(({ id, name }) => (
-          <MenuItem key={id} value={id}>
-            {name ?? id}
-          </MenuItem>
-        ))}
-      </Select>
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
-    </FormControl>
   );
 };
 
@@ -158,62 +118,4 @@ const ConfigurationForm = (props) => {
 const addEndpointThunk = (details) => (index) => {}; //TODO:
 const addActionThunk = (details) => (index) => {}; //TODO:
 
-const ControlledSelection = (props) => {
-  const {
-    rules,
-    control,
-    title,
-    tag = title?.toLowerCase(),
-    value = '',
-  } = props;
-  return (
-    <Controller
-      name={tag}
-      control={control}
-      defaultValue={value}
-      rules={rules}
-      render={({ field }) => {
-        const formBag = field;
-        delete formBag.ref;
-        return <Selection {...props} {...formBag} />;
-      }}
-    />
-  );
-};
-
-const ControlledTextField = (props) => {
-  const {
-    control,
-    error,
-    errorText,
-    helperText,
-    placeholder,
-    rules,
-    title,
-    tag = title?.toLowerCase(),
-    value = '',
-    variant = 'filled',
-  } = props;
-  return (
-    <Controller
-      name={tag}
-      control={control}
-      defaultValue={value}
-      rules={rules}
-      render={({ field }) => (
-        <FormControl>
-          <TextField
-            id={tag}
-            error={error}
-            label={title}
-            helperText={error ? errorText : helperText}
-            placeholder={placeholder}
-            variant={variant}
-            {...field}
-          />
-        </FormControl>
-      )}
-    />
-  );
-};
 export default WebhookConfigurator;

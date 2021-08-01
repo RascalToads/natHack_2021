@@ -4,6 +4,7 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import { useAppContext } from '../contexts/AppContext';
+import { CONTEXTS } from '../constants';
 import { db } from '../firebase';
 import ActionRows from './ActionRows';
 import Selection from './Selection';
@@ -11,12 +12,19 @@ import Selection from './Selection';
 const useStyles = makeStyles((theme) => ({
   formControl: {},
 }));
-
+// TODO: Load these from database
 const availableContext = [
   {
     id: 0,
     name: 'zero',
-    // data: contextData actually goes here
+  },
+  {
+    id: 1,
+    name: 'one',
+  },
+  {
+    id: 2,
+    name: 'two',
   },
 ];
 
@@ -29,8 +37,6 @@ const WebhookConfigurator = (props) => {
   const onChange = (event) => {
     console.log('CHANGING CONTEXT');
     // TODO: just set context id and name, let the effect load the data
-    // const doc = db.doc('contexts/f');
-    // doc.set({ testing: 'okay' });
     setContext(availableContext.find((t) => t.id === event.target.value));
   };
 
@@ -55,19 +61,23 @@ const ConfigurationForm = (props) => {
   const { control, handleSubmit, watch } = useForm({
     defaultValues: { ...context, data: context?.data ?? [{ endpoints: [{}] }] },
   });
-  const onSubmit = ({ context: nextContextId, ...data }) => {
-    //TODO: UPDATE to parse  ACTIONS
-    // TODO: SAVE TO FIRESTORE
+  const onSubmit = ({ data }) => {
+    const doc = db.doc(`${CONTEXTS}/${context.id}`);
+    const payload = {
+      id: context.id,
+      name: context.name,
+      data,
+    };
+    doc.set(payload);
     // TODO: just set context value and id, let top useeffect load the data
-    const nextContext = availableContext.find((t) => t.id === nextContextId);
-    setContext({ ...data, ...nextContext });
+    // const nextContext = availableContext.find((t) => t.id === nextContextId);
+    // setContext({ ...data, ...nextContext });
   };
 
   console.log('in form context is', context);
   const actions = Object.values(context?.data ?? {});
 
   // TODO: HANDLE ERRORS
-  // TODO: SUBMIT TO FIRESTORE
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <ActionRows actions={actions} control={control} watch={watch} />

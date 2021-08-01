@@ -1,3 +1,8 @@
+/**
+ * npm install express
+ * node mocke_server.js
+ */
+
 const express = require('express')
 const bodyParser = require('body-parser')
 

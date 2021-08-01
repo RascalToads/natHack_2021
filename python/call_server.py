@@ -80,12 +80,12 @@ def make_all_calls(
         (wink_left, 'wink-left'),
         (wink_right, 'wink-right'),
         (concentration, 'concentration'),
-        (percent_concentration, 'percent_concentration'),
+        (percent_concentration, 'percent-concentration'),
     ]:
-        if eventName != 'percent_concentration':
+        if eventName != 'percent-concentration':
             payload = {
                 'action': {
-                    'value': 1 if value else 0,
+                    'value': 1 if bool(value) else 0,
                     'time': time.time()
                 },
                 'data': {},

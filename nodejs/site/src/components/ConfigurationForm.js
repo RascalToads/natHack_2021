@@ -3,6 +3,7 @@ import Button from '@material-ui/core/Button';
 import { CONTEXTS } from '../constants';
 import { db } from '../firebase';
 import ActionRows from './ActionRows';
+import { Paper, Typography } from '@material-ui/core';
 
 const ConfigurationForm = (props) => {
   const { context, setContext } = props;
@@ -25,12 +26,14 @@ const ConfigurationForm = (props) => {
 
   // TODO: HANDLE ERRORS
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <ActionRows actions={actions} control={control} watch={watch} />
-      <Button type="submit" variant="contained">
-        Submit
-      </Button>
-    </form>
+    <Paper>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <ActionRows actions={actions} control={control} watch={watch} />
+        <Button type="submit" variant="contained">
+          Submit
+        </Button>
+      </form>
+    </Paper>
   );
 };
 

@@ -21,9 +21,9 @@ const Selection = (props) => {
     tag = title?.toLowerCase(),
     value = '',
   } = props;
-  const classes = useStyles();
+  const styles = useStyles();
   return (
-    <FormControl variant="filled" className={classes.formControl}>
+    <FormControl variant="filled" className={styles.formControl}>
       <InputLabel id={`select-${tag}-label`}>{title}</InputLabel>
       <Select
         id={`select-${tag}`}

@@ -8,10 +8,10 @@ name: "something",
 data: {
   'blink': {
     action: 'blink, eye-movement, brow-up, brow-down, 
-    outputs: [
+    endpoints: [
       {
         mode: "GET | POST", 
-        endpoint: "localhost:3000", 
+        url: "localhost:3000", 
       },
     ], 
     valueType: 'Boolean, Number, Raw',
@@ -24,6 +24,7 @@ const dispatchWebhooks = async (req, res) => {
   try {
     const dispatches = Object.values(context?.data ?? {});
     const dispatchWebhook = dispatchWebhookThunk(json);
+    // TODO: log errors
     Promise.allSettled(dispatches.map(dispatchWebhook));
   } catch (error) {
     console.error(error);
@@ -32,25 +33,28 @@ const dispatchWebhooks = async (req, res) => {
 };
 
 const dispatchWebhookThunk = (json) => async (dispatch) => {
-  const { action, outputs, valueType, value } = dispatch;
-  if (!outputs?.length) return 'OK';
+  const { action, endpoints, valueType, value } = dispatch;
+  if (!endpoints?.length) return 'OK';
   const results = await Promise.allSettled(
-    outputs.map(({ endpoint, mode }) => {
-      let url = endpoint;
+    endpoints.map(({ url, mode }) => {
+      let endpoint = url;
       if (mode === 'GET') {
-        url = path.join(url, action);
-        if (valueType === 'Number') url = path.join(url, value);
+        endpoint = path.join(endpoint, action);
+        if (valueType === 'Number') endpoint = path.join(endpoint, value);
         else if (shouldAbort({ action, json, value })) return 'OK';
-        return curly.get(url);
+        console.log('calling', endpoint);
+        return curly.get(endpoint);
       }
       const options = {
         method: mode,
         postFields: JSON.stringify(json),
       };
-      return curly.post(url, options);
+      console.log('calling', endpoint);
+      return curly.post(endpoint, options);
       // const { statusCode, data } = await curly.post(
     })
   );
+  // TODO: log errors
   return results;
 };
 

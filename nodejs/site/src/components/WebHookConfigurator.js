@@ -16,15 +16,23 @@ const useStyles = makeStyles((theme) => ({
 const availableContext = [
   {
     id: 0,
-    name: 'zero',
+    name: 'Chris (0)',
   },
   {
     id: 1,
-    name: 'one',
+    name: 'Jemima(1)',
   },
   {
     id: 2,
-    name: 'two',
+    name: 'Dan(2)',
+  },
+  {
+    id: 3,
+    name: 'James(3)',
+  },
+  {
+    id: 4,
+    name: 'Michael(4)',
   },
 ];
 

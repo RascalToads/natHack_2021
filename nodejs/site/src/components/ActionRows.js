@@ -1,9 +1,9 @@
+import { useFieldArray, useWatch } from 'react-hook-form';
 import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import ControlledSelection from './ControlledSelection';
 import Endpoints from './Endpoints';
-import { useFieldArray } from 'react-hook-form';
 import {
   ACTION_OPTIONS,
   BOOLEAN,
@@ -44,7 +44,7 @@ const Row = (props) => {
   // TODO: consume error texts
   // const { errors } = props;
   // const error = errors[index];
-
+  const valueType = useWatch({ control, name: `data.${index}.valueType` });
   return (
     <Container>
       <ControlledSelection
@@ -65,8 +65,7 @@ const Row = (props) => {
         tag={`data.${index}.valueType`}
         value={data?.valueType ?? ''}
       />
-      {/* TODO: use watch to check this value */}
-      {data?.valueType === BOOLEAN && (
+      {valueType === BOOLEAN && (
         <ControlledSelection
           control={control}
           rules={{ required: true }}

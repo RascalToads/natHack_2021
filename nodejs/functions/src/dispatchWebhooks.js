@@ -22,7 +22,7 @@ data: {
 const dispatchWebhooks = async (req, res) => {
   const { context, body: json } = req;
   try {
-    const dispatches = Object.values(context?.data);
+    const dispatches = Object.values(context?.data ?? {});
     const dispatchWebhook = dispatchWebhookThunk(json);
     Promise.allSettled(dispatches.map(dispatchWebhook));
   } catch (error) {

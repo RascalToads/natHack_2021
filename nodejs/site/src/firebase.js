@@ -9,7 +9,6 @@ if (!firebase.apps.length)
   });
 
 export const db = firebase.firestore();
-console.log(process.env, process.env.USE_EMULATOR);
 
 // eslint-disable-next-line no-restricted-globals
 if (location.hostname === 'localhost' && process.env.REACT_APP_USE_EMULATOR) {

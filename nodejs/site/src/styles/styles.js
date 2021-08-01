@@ -1,4 +1,5 @@
-import { createTheme } from '@material-ui/core/styles'
+import PropTypes from 'prop-types';
+import { createTheme } from '@material-ui/core/styles';
 import { create } from 'jss';
 import jssTemplate from 'jss-plugin-template';
 import {
@@ -12,18 +13,15 @@ import { palette } from './palette';
 import { typography } from './typography';
 import './styles.css';
 
-
 const Styles = ({ children }) => (
   <StylesProvider jss={jss}>
-    <ThemeProvider theme={theme}> {children} </ThemeProvider>
+    <ThemeProvider theme={responsiveFontSizes(theme)}>{children}</ThemeProvider>
   </StylesProvider>
 );
 
 const jss = create({
   plugins: [jssTemplate(), ...jssPreset().plugins],
 });
-
-const responsiveTheme = responsiveFontSizes(theme);
 
 const theme = createTheme({
   overrides,

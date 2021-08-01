@@ -35,18 +35,20 @@ const dispatchWebhooks = async (req, res) => {
 const dispatchWebhookThunk = (json) => async (dispatch) => {
   const { action, endpoints, valueType, value } = dispatch;
   if (!endpoints?.length) return 'OK';
+  const expectedValue = normalizeValue(value, valueType);
   const results = await Promise.allSettled(
     endpoints.map(({ url, mode }) => {
       let endpoint = url;
       if (mode === 'GET') {
         endpoint = path.join(endpoint, action);
-        if (valueType === 'Number') endpoint = path.join(endpoint, value);
-        else if (shouldAbortGet({ action, json, value })) return 'OK';
+        if (valueType === 'number') endpoint = path.join(endpoint, value);
+        else if (shouldAbortGet({ action, json, expectedValue })) return 'OK';
         console.log('calling', endpoint);
         return curly.get(endpoint);
       }
       console.log('calling', endpoint);
-      if (shouldAbortPost({ action, json, value, valueType })) return 'OK';
+      if (shouldAbortPost({ action, json, expectedValue, valueType }))
+        return 'OK';
       const options = {
         method: mode,
         postFields: formatPostFields({ action, json, valueType }),
@@ -59,7 +61,12 @@ const dispatchWebhookThunk = (json) => async (dispatch) => {
   return results;
 };
 
-const shouldAbortGet = ({ action, json, value: expectedValue }) => {
+const normalizeValue = (value, valueType) => {
+  if (valueType === 'boolean') return value?.toLowerCase() === 'true';
+  return value;
+};
+
+const shouldAbortGet = ({ action, json, expectedValue }) => {
   let aborts = true;
   try {
     const actionState = processMetricsData(json, action);
@@ -70,10 +77,10 @@ const shouldAbortGet = ({ action, json, value: expectedValue }) => {
   return aborts;
 };
 
-const shouldAbortPost = ({ action, json, value: expectedValue, valueType }) => {
+const shouldAbortPost = ({ action, json, expectedValue, valueType }) => {
   let aborts = false;
   if (valueType === 'boolean')
-    aborts = shouldAbortGet({ action, json, value: expectedValue, valueType });
+    aborts = shouldAbortGet({ action, json, expectedValue, valueType });
   return aborts;
 };
 

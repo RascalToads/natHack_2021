@@ -27,7 +27,10 @@ const dispatchWebhooks = async (req, res) => {
     const dispatchWebhook = dispatchWebhookThunk(json);
     // TODO: log errors
     const results = await Promise.allSettled(dispatches.map(dispatchWebhook));
-    console.log(results);
+    console.log(
+      'function errors',
+      results.filter((r) => r.reason)
+    );
   } catch (error) {
     console.error(error);
   }
@@ -44,7 +47,8 @@ const dispatchWebhookThunk = (json) => async (dispatch) => {
       if (mode === 'GET') {
         endpoint = path.join(endpoint, action);
         if (valueType === 'value') endpoint = path.join(endpoint, value);
-        else if (shouldAbortGet({ action, json, expectedValue })) return 'OK';
+        else if (shouldAbortGet({ action, json, expectedValue, valueType }))
+          return 'OK';
         console.log('get calling', endpoint);
         const { statusCode, data } = await curly.get(endpoint);
         console.log(statusCode, data);
@@ -66,7 +70,7 @@ const dispatchWebhookThunk = (json) => async (dispatch) => {
     })
   );
   console.log(
-    'dispatches',
+    'dispatch errors',
     results.filter((r) => r.reason)
   );
   // TODO: log errors

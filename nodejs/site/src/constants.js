@@ -1,8 +1,15 @@
 export const ACTION_OPTIONS = [
+  { id: 'artifact-detect', name: 'Artifact Detect' },
+  { id: 'eye', name: 'Eye Movement' },
+  { id: 'bandpower', name: 'Bandpower' },
+  { id: 'blink', name: 'Blink' },
+  { id: 'metrics', name: 'Metrics' },
   { id: 'brow-down', name: 'Brow Down' },
   { id: 'brow-up', name: 'Brow Up' },
+  { id: 'wink-left', name: 'Wink Left' },
+  { id: 'wink-right', name: 'Wink Right' },
   { id: 'concentration', name: 'Concentration' },
-  { id: 'eye-movement', name: 'Eye Movement' },
+  { id: 'percent-concentration', name: 'Percent Concentration' },
 ];
 
 export const BOOLEAN = 'boolean';

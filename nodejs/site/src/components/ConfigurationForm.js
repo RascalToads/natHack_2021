@@ -1,4 +1,5 @@
 import { useForm } from 'react-hook-form';
+import Button from '@material-ui/core/Button';
 import { CONTEXTS } from '../constants';
 import { db } from '../firebase';
 import ActionRows from './ActionRows';
@@ -20,15 +21,15 @@ const ConfigurationForm = (props) => {
       .then(() => setContext({ id: context.id, name: context.name }));
   };
 
-  console.log('in form context is', context);
   const actions = Object.values(context?.data ?? {});
 
   // TODO: HANDLE ERRORS
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <ActionRows actions={actions} control={control} watch={watch} />
-
-      <input type="submit" />
+      <Button type="submit" variant="contained">
+        Submit
+      </Button>
     </form>
   );
 };

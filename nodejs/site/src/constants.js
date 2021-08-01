@@ -21,3 +21,5 @@ export const MODE_OPTIONS = [
   { id: 'GET', name: 'GET' },
   { id: 'POST', name: 'POST' },
 ];
+
+export const CONTEXTS = 'contexts';

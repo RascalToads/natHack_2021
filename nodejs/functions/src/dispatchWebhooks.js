@@ -1,6 +1,6 @@
 const { curly } = require('node-libcurl');
 const path = require('path');
-const { processMetricsData } = require('./processMetrics');
+const { getValue, processMetricsData } = require('./processMetrics');
 
 /*
 id: 0, 
@@ -41,15 +41,16 @@ const dispatchWebhookThunk = (json) => async (dispatch) => {
       if (mode === 'GET') {
         endpoint = path.join(endpoint, action);
         if (valueType === 'Number') endpoint = path.join(endpoint, value);
-        else if (shouldAbort({ action, json, value })) return 'OK';
+        else if (shouldAbortGet({ action, json, value })) return 'OK';
         console.log('calling', endpoint);
         return curly.get(endpoint);
       }
+      console.log('calling', endpoint);
+      if (shouldAbortPost({ action, json, value, valueType })) return 'OK';
       const options = {
         method: mode,
-        postFields: JSON.stringify(json),
+        postFields: formatPostFields({ action, json, valueType }),
       };
-      console.log('calling', endpoint);
       return curly.post(endpoint, options);
       // const { statusCode, data } = await curly.post(
     })
@@ -58,7 +59,7 @@ const dispatchWebhookThunk = (json) => async (dispatch) => {
   return results;
 };
 
-const shouldAbort = ({ action, json, value: expectedValue }) => {
+const shouldAbortGet = ({ action, json, value: expectedValue }) => {
   let aborts = true;
   try {
     const actionState = processMetricsData(json, action);
@@ -69,8 +70,29 @@ const shouldAbort = ({ action, json, value: expectedValue }) => {
   return aborts;
 };
 
+const shouldAbortPost = ({ action, json, value: expectedValue, valueType }) => {
+  let aborts = false;
+  if (valueType === 'boolean')
+    aborts = shouldAbortGet({ action, json, value: expectedValue, valueType });
+  return aborts;
+};
+
+const formatPostFields = ({ action, json, valueType }) => {
+  switch (valueType) {
+    case 'boolean':
+      return Boolean(getValue(json, action));
+    case 'value':
+      return getValue(json);
+    case 'json':
+      return JSON.stringify(json);
+    default:
+      throw new Error('Unsupported POST configurations');
+  }
+};
+
 module.exports = {
   dispatchWebhooks,
   dispatchWebhookThunk,
-  shouldAbort,
+  shouldAbortGet,
+  shouldAbortPost,
 };

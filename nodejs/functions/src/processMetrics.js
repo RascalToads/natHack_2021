@@ -3,11 +3,14 @@
  * API calls forwarded through the metrics app over webhooks.
  */
 
-const didBlink = (json) => Boolean(json?.action?.value?.blink?.blink);
+const didBlink = (json) => Boolean(valueBlink(json));
+const valueBlink = (json) => json?.action?.value?.blink?.blink;
 
-const didWink = (json) => Boolean(json?.action?.value?.wink?.wink);
+const didWink = (json) => Boolean(valueWink(json));
+const valueWink = (json) => json?.action?.value?.wink?.wink;
 
-const didMoveEye = (json) => Boolean(json?.action?.value?.eye?.eye);
+const didMoveEye = (json) => Boolean(valueMoveEye(json));
+const valueMoveEye = (json) => json?.action?.value?.eye?.eye;
 
 const processMetricsData = (json, messageType) => {
   switch (messageType) {
@@ -22,9 +25,23 @@ const processMetricsData = (json, messageType) => {
   }
 };
 
+const getValue = (json, messageType) => {
+  switch (messageType) {
+    case 'blink':
+      return valueBlink(json);
+    case 'wink':
+      return valueWink(json);
+    case 'eye':
+      return valueMoveEye(json);
+    default:
+      throw new Error('Unsupported Message');
+  }
+};
+
 module.exports = {
   didBlink,
   didWink,
   didMoveEye,
+  getValue,
   processMetricsData,
 };

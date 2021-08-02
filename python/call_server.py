@@ -17,16 +17,23 @@ ERRORS_IN_A_ROW = 0
 INITIAL_ERRORS_THRESHOLD = 20
 # do not set this to 0, 1 will log every error, 5 will log every 5th error
 LOG_LIMIT = 1
+FIRST_TIMEOUT = 30
+IS_FIRST = True
 
 
 def make_server_call(
         payload,
         log_timing = False,
-        timeout_s = 1,
+        timeout_s = 2,
         print_traceback = False,
 ):
+    global FIRST_TIMEOUT
+    global IS_FIRST
     global ERRORS_IN_A_ROW
     global ERRORS_WERE_RESET
+    if IS_FIRST:
+        timeout_s = 30
+    IS_FIRST = False
     s = time.time()
     error = None
     if USE_REMOTE_SERVER:

@@ -57,7 +57,6 @@ while True:
 #call api
     finalDataAPI = np.asarray(data_buffer).tolist()
     api_output = request_metrics(api_key=args.api_key, eeg_data=finalDataAPI, metrics=metricsCall,)
-    print(api_output)
     eye = api_output['eye']['eye']
     blink = api_output['blink']['blink']
     artifact_label = [api_output['artifact_detect']['channel1'], api_output['artifact_detect']['channel2'], api_output['artifact_detect']['channel3'], api_output['artifact_detect']['channel4']]
@@ -70,7 +69,7 @@ while True:
     normalize_data_buffer_bandpass = bandpass_data(normalize_data_buffer, .1, 15, sampling_rate, 2)
     
 # first get wink left and wink right and add to artifact label
-    current_wink_left, current_wink_right = detect_Wink(normalize_data_buffer_bandpass, 5)
+    current_wink_left, current_wink_right = detect_Wink(normalize_data_buffer_bandpass, artifact_label)
     if current_wink_right == True:
         if (last_wink_right == True) or (last_last_wink_right == True):
             current_wink_right = False
@@ -110,7 +109,7 @@ while True:
         api_average_bandpower = last_api_average_bandpower
 
     # get api bandpower, calculate average, clean bad data, convert from ratio to percentage, set threshold for concentration bool
-    else:                                       
+    else:
         api_average_bandpower = np.zeros(4)
         for band in range(0, 4):
             for channel in range(0, num_sensors):
@@ -124,7 +123,7 @@ while True:
         current_ratio_concentration = api_average_bandpower[2] / api_average_bandpower[3]
         last_api_average_bandpower = api_average_bandpower
         current_percent_concentration = abs(np.log10(current_ratio_concentration) * 100)
-        if current_percent_concentration > 25:
+        if current_percent_concentration > 20:
             current_concentration = False
         else:
             current_concentration = True
@@ -136,24 +135,39 @@ while True:
     last_last_wink_right = last_wink_right
     last_wink_left = current_wink_left
     last_wink_right = current_wink_right
-
-    # print output
     sample_counter += 1
-    print(str(sample_counter)
-          + ", blink: " + str(blink)
-          + ", eye: " + str(eye)
-          + ", brow_up: "
-          + str(current_brow_up)
-          + ", brow_down: "
-          + str(current_brow_down)
-          + ", wink_left: "
-          + str(current_wink_left)
-          + ", wink_right: "
-          + str(current_wink_right)
-          + ", concentration: "
-          + str(current_concentration)
-          + ", percent_concentration: "
-          + str(round(current_percent_concentration, 2)))
+
+    output_string = ""
+
+    if current_brow_up == True or current_brow_down == True or current_wink_left == True or current_wink_right == True:
+        eye = "False"
+    if current_concentration == True:
+        focus_output = "Focused:     " + str(int(current_percent_concentration)) + "%"
+        output_string += str(focus_output)
+    #        print("Focused: " + str(round(current_percent_concentration, 0)) + "%")
+    if current_concentration == False:
+        focus_output = "Not Focused: " + str(int(current_percent_concentration)) + "%"
+        output_string += str(focus_output)
+    #        print("Not Focused: " + str(round(current_percent_concentration, 0)) + "%")
+    if blink == "True":
+        output_string += ", Blink"
+    #        print("Blink")
+    if eye == "True":
+        output_string += ", Eye Movement"
+    if current_brow_up == True:
+        output_string += ", Brow Up"
+    #        print("Brow Up")
+    if current_brow_down == True:
+        output_string += ", Brow Down"
+    #        print("Brow Down")
+    if current_wink_left == True:
+        output_string += ", Wink Left"
+    #        print("Wink Left")
+    if current_wink_right == True:
+        output_string += ", Wink Right"
+    #        print("Wink Right")
+
+    print(output_string)
 
     if isinstance(blink, str):
         if blink == 'True':
@@ -176,5 +190,3 @@ while True:
         wink_right=current_wink_right,
         percent_concentration=current_percent_concentration,
     )
-
-    

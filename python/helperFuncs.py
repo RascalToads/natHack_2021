@@ -55,8 +55,9 @@ def detect_Brow(data, artifact_label):
     ch2_ch3_test = (abs(np.max(data[1])) * abs(np.min(data[1])) + abs(np.max(data[2])) * abs(np.min(data[2])))
     ch1_ch4_test = (abs(np.max(data[0])) * abs(np.min(data[0])) + abs(np.max(data[3])) * abs(np.min(data[3])))
     max_min_ratio = ch2_ch3_test / ch1_ch4_test
-    if max_min_ratio > 10:
-        if max_min_ratio < 100:
+
+    if (ch2_ch3_test / 10000) > 20:
+        if (ch2_ch3_test / 10000) < 100:
             return_brow_up = True
         else:
             return_brow_down = True

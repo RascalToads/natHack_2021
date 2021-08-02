@@ -169,6 +169,17 @@ while True:
 
     print(output_string)
 
+    if isinstance(blink, str):
+        if blink == 'True':
+            blink = True
+        else:
+            blink = False
+    if isinstance(eye, str):
+        if eye == 'True':
+            eye = True
+        else:
+            eye = False
+
     call_server.make_all_calls(
         brow_up=current_brow_up,
         brow_down=current_brow_down,

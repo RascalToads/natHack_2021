@@ -4,8 +4,10 @@ import traceback
 import json
 
 # modify these based on the expected server
-SERVER_IP = 'localhost'
-SERVER_PORT = 3000
+# SERVER_IP = 'https://us-central1-nathack-2021.cloudfunctions.net/webhooksconfig/4'
+SERVER_URL = 'https://us-central1-nathack-2021.cloudfunctions.net/webhooksconfig/4'
+TEST_PORT = 3000
+USE_REMOTE_SERVER = True
 
 # internal tracking vars for recognizing error events
 ERRORS_WERE_RESET = False
@@ -20,15 +22,18 @@ LOG_LIMIT = 1
 def make_server_call(
         payload,
         log_timing = False,
-        timeout_s = 0.1,
+        timeout_s = 1,
         print_traceback = False,
 ):
     global ERRORS_IN_A_ROW
     global ERRORS_WERE_RESET
     s = time.time()
     error = None
-    url = f'http://{SERVER_IP}:{SERVER_PORT}/'
-    print('PAYLOAD', payload)
+    if USE_REMOTE_SERVER:
+        # url = f'http://localhost:{TEST_PORT}/'
+        url = SERVER_URL
+    else:
+        url = f'http://localhost:{TEST_PORT}/'
     try:
         response = requests.post(
             url,

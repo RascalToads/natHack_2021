@@ -133,7 +133,7 @@ const WebhookConfigurator = (props) => {
             <br />
             The backend, frontend, and the python scripts were created in this
             hackathon. The python scripts include new gesture classifications,
-            web interfaces to send and receive webhooks,. References to the code
+            web interfaces to send and receive webhooks. References to the code
             can be found{' '}
             <a
               href="https://github.com/RascalToads/natHack_2021"

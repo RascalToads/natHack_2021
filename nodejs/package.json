@@ -1,6 +1,6 @@
 {
-  "name": "nathack-2021-node-monorepo",
-  "description": "NodeJS Monorepo for NatHack 2021 by RascalToads",
+  "name": "nathacks-2021-node-monorepo",
+  "description": "NodeJS Monorepo for natHACKS 2021 by RascalToads",
   "scripts": {
     "dev": "FIRESTORE_EMULATOR_HOST='localhost:8080' concurrently --handle-input \"cd site && yarn start\" \"wait-on http://localhost:3000/ && yarn serve\"",
     "serve": "firebase emulators:start --only firestore,functions",

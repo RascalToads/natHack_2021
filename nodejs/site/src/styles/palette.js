@@ -1,2 +1,3 @@
-export const palette = {//TODO
-}
+export const palette = {
+  //TODO
+};

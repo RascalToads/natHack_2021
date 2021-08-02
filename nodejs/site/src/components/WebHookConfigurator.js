@@ -3,16 +3,12 @@ import isEqual from 'lodash/isEqual';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import { makeStyles } from '@material-ui/core/styles';
 import { useAppContext } from '../contexts/AppContext';
 import { CONTEXTS } from '../constants';
 import { db } from '../firebase';
 import ConfigurationForm from './ConfigurationForm';
 import Selection from './Selection';
 
-const useStyles = makeStyles((theme) => ({
-  formControl: {},
-}));
 // TODO: Load these from database
 const availableContext = [
   {
@@ -65,7 +61,13 @@ const WebhookConfigurator = (props) => {
 
   return (
     <Container>
-      <Typography variant="h1">'WHC|</Typography>
+      <Typography variant="h1">
+        WHC|
+        <Typography variant="subtitle1">
+          {'<'}Webhook Configurator{'>'}
+        </Typography>
+      </Typography>
+      <Typography variant="h2">natHACKS 2021 - RascalToads</Typography>
       <Selection
         onChange={onChange}
         helperText="Select a Context"
